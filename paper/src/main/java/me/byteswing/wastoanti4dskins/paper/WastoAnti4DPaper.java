@@ -20,6 +20,10 @@ public class WastoAnti4DPaper extends JavaPlugin implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
 
+        if (player.isOp()) {
+            player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize("&aПриятного использования, создано сервером &c&lWastoPE.fun"));
+        }
+
         if (SkinChecker.has4dSkin(player.getUniqueId())) {
             player.kick(LegacyComponentSerializer.legacySection().deserialize(SkinChecker.KICK_MESSAGE));
         }
