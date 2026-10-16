@@ -1,0 +1,5 @@
+name: WastoAnti4DSkins
+version: '${version}'
+main: me.byteswing.wastoanti4dskins.bungee.WastoAnti4DBungee
+author: byteswing
+depends: [Geyser-BungeeCord]

@@ -1,0 +1,6 @@
+id: wastoanti4dskins
+name: WastoAnti4DSkins
+main: me.byteswing.wastoanti4dskins.geyser.WastoAnti4DExtension
+api: 2.9.0
+version: '${version}'
+authors: [byteswing]

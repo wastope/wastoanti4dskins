@@ -1,0 +1,6 @@
+name: WastoAnti4DSkins
+version: '${version}'
+main: me.byteswing.wastoanti4dskins.paper.WastoAnti4DPaper
+api-version: '1.21'
+authors: [byteswing]
+depend: [Geyser-Spigot]

@@ -1,0 +1,83 @@
+plugins {
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.8'
+    id 'xyz.jpenilla.run-velocity' version '2.3.1' apply false
+}
+
+allprojects {
+    group = 'me.byteswing'
+    version = '1.0'
+}
+
+def targetJavaVersion = 21
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'papermc-repo'
+            url = 'https://repo.papermc.io/repository/maven-public/'
+        }
+        maven {
+            name = 'opencollab'
+            url = 'https://repo.opencollab.dev/main/'
+        }
+    }
+
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release.set(targetJavaVersion)
+    }
+
+    dependencies {
+        compileOnly 'org.geysermc.geyser:api:2.9.0-SNAPSHOT'
+        compileOnly 'org.geysermc.geyser:core:2.9.1-SNAPSHOT'
+    }
+
+    if (name != 'common') {
+        dependencies {
+            compileOnly project(':common')
+        }
+
+        jar {
+            archiveBaseName = "${rootProject.name}-${project.name}"
+            dependsOn ':common:classes'
+            from { project(':common').sourceSets.main.output }
+        }
+
+        processResources {
+            def props = ['version': project.version]
+            inputs.properties props
+            filesMatching(['plugin.yml', 'bungee.yml', 'extension.yml']) {
+                expand props
+            }
+        }
+    }
+}
+
+def platforms = subprojects.findAll { it.name != 'common' }
+
+def collectJars = tasks.register('collectJars', Copy) {
+    group = 'build'
+    description = 'Copies jars of all platform modules into build/libs'
+    dependsOn platforms.collect { "${it.path}:build" }
+    from platforms.collect { "${it.projectDir}/build/libs" }
+    include '*.jar'
+    into layout.buildDirectory.dir('libs')
+}
+
+tasks.register('build') {
+    group = 'build'
+    dependsOn collectJars
+}
+
+tasks.register('clean', Delete) {
+    group = 'build'
+    dependsOn subprojects.collect { "${it.path}:clean" }
+    delete layout.buildDirectory
+}
